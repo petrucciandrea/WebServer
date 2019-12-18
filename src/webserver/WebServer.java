@@ -31,7 +31,7 @@ public class WebServer implements Runnable{
 	
 	// Client Connection via Socket Class
 	private Socket connect;
-	
+	private String fileOrigin=null;
 	public WebServer(Socket c) {
 		connect = c;
 	}
@@ -81,6 +81,7 @@ public class WebServer implements Runnable{
 			// we get file requested
 			fileRequested = parse.nextToken().toLowerCase();
 			                 System.out.println(fileRequested);
+                        fileOrigin=fileRequested;
 			// we support only GET and HEAD methods, we check
 			if (!method.equals("GET")  &&  !method.equals("HEAD")) {
 				if (verbose) {
@@ -141,7 +142,8 @@ public class WebServer implements Runnable{
 			
 		} catch (FileNotFoundException fnfe) {                  
 			try {
-                            redirect(out, dataOut, fileRequested);
+                            if(!fileOrigin.endsWith("/"))
+                                redirect(out, dataOut, fileOrigin);
                             fileNotFound(out, dataOut, fileRequested);
 			} catch (IOException ioe) {
 				System.err.println("Error with file not found exception : " + ioe.getMessage());
@@ -191,49 +193,41 @@ public class WebServer implements Runnable{
 	}
 	
 	private void fileNotFound(PrintWriter out, OutputStream dataOut, String fileRequested) throws IOException {
-		File file = new File(WEB_ROOT, FILE_NOT_FOUND);
-		int fileLength = (int) file.length();
-		String content = "text/html";
-		byte[] fileData = readFileData(file, fileLength);
-		
-		out.println("HTTP/1.1 404 File Not Found");
-		out.println("Server: Java HTTP Server from SSaurel : 1.0");
-		out.println("Date: " + new Date());
-		out.println("Content-type: " + content);
-		out.println("Content-length: " + fileLength);
-		out.println(); // blank line between headers and content, very important !
-		out.flush(); // flush character output stream buffer
-		
-		dataOut.write(fileData, 0, fileLength);
-		dataOut.flush();
-		
-		if (verbose) {
-			System.out.println("File " + fileRequested + " not found");
-		}
+	
+            File file = new File(WEB_ROOT, FILE_NOT_FOUND);
+            int fileLength = (int) file.length();
+            String content = "text/html";
+            byte[] fileData = readFileData(file, fileLength);
+
+            out.println("HTTP/1.1 404 File Not Found");
+            out.println("Server: Java HTTP Server from SSaurel : 1.0");
+            out.println("Date: " + new Date());
+            out.println("Content-type: " + content);
+            out.println("Content-length: " + fileLength);
+            out.println(); // blank line between headers and content, very important !
+            out.flush(); // flush character output stream buffer
+
+            dataOut.write(fileData, 0, fileLength);
+            dataOut.flush();
+
+            if (verbose) {
+                    System.out.println("File " + fileRequested + " not found");
+            }
+            
 	}
 	private void redirect(PrintWriter out, OutputStream dataOut, String fileRequested) throws IOException {
-            
-            String fileRedirected = fileRequested + "/" + DEFAULT_FILE;
-            System.out.println("RED :" + fileRedirected);
-            
-            File fileRed = new File(WEB_ROOT, fileRedirected);
-            
-            if(fileRed.exists()){
-                
-                File file = new File(WEB_ROOT, fileRequested);
-		int fileLength = (int) file.length();
-		String content = "text/html";
-		byte[] fileData = readFileData(fileRed, fileLength);
-		
-		out.println("HTTP/1.1 301 Moved Permanently");
-		out.println("Server: Java HTTP Server from SSaurel : 1.0");
-		out.println("Date: " + new Date());
+            if(!fileRequested.contains("index.html")){
+                String fileRedirected = fileRequested + "/";
+
+                out.println("HTTP/1.1 301 Moved Permanently");
+                out.println("Server: Java HTTP Server from SSaurel : 1.0");
+                out.println("Date: " + new Date());
                 out.println("Location: " + fileRedirected);
-		out.println(); // blank line between headers and content, very important !
-		out.flush(); // flush character output stream buffer
-		if (verbose) {
-			System.out.println("File " + fileRequested + " not found, redirected to " + fileRedirected);
-		}
+                out.println(); // blank line between headers and content, very important !
+                out.flush(); // flush character output stream buffer
+                if (verbose) {
+                        System.out.println("File " + fileRequested + " not found, redirected to " + fileRedirected);
+                }
             }
         }
 }
