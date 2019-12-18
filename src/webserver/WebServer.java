@@ -216,7 +216,6 @@ public class WebServer implements Runnable{
             
 	}
 	private void redirect(PrintWriter out, OutputStream dataOut, String fileRequested) throws IOException {
-            if(!fileRequested.contains("index.html")){
                 String fileRedirected = fileRequested + "/";
 
                 out.println("HTTP/1.1 301 Moved Permanently");
@@ -228,6 +227,6 @@ public class WebServer implements Runnable{
                 if (verbose) {
                         System.out.println("File " + fileRequested + " not found, redirected to " + fileRedirected);
                 }
-            }
+            
         }
 }
