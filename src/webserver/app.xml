@@ -2,4 +2,5 @@
 <config>
         <path>./WebServer/</path>
 	<port>8080</port>
+        <redirect>true</redirect>
 </config>

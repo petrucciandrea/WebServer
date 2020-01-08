@@ -29,6 +29,7 @@ public class WebServer implements Runnable{
 	static final String METHOD_NOT_SUPPORTED = "not_supported.html";
 	// port to listen connection
 	static int PORT;
+        static boolean red;
 	
 	// verbose mode
 	static final boolean verbose = true;
@@ -46,9 +47,10 @@ public class WebServer implements Runnable{
                         Config config = configParser.parse("webserver/app.xml");
                         PORT = Integer.parseInt(config.getPort());
                         WEB_ROOT = new File(config.getPath());
+                        red = config.isRedirect();
                         
 			ServerSocket serverConnect = new ServerSocket(PORT);
-			System.out.println("Server started.\nListening for connections on port : " + PORT + " ...\n");
+			System.out.println("Server started.\nLiscdtening for connections on port : " + PORT + " ...\n");
 			
 			// we listen until user halts server execution
 			while (true) {
@@ -151,7 +153,7 @@ public class WebServer implements Runnable{
 			
 		} catch (FileNotFoundException fnfe) {                  
 			try {
-                            if(!fileOrigin.endsWith("/"))
+                            if(!fileOrigin.endsWith("/") && red==true)
                                 redirect(out, dataOut, fileOrigin);
                             fileNotFound(out, dataOut, fileRequested);
 			} catch (IOException ioe) {

@@ -16,7 +16,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Config {
     private String path;
     private String port;
+    private boolean redirect;
 
+    public void setRedirect(boolean redirect) {
+        this.redirect = redirect;
+    }
+
+    public boolean isRedirect() {
+        return redirect;
+    }
 
     public void setPath(String path) {
         this.path = path;
@@ -36,7 +44,7 @@ public class Config {
 
     @Override
     public String toString() {
-        return "Config{" + "path=" + path + ", port=" + port + '}';
+        return "Config{" + "path=" + path + ", port=" + port + ", redirect=" + redirect + '}';
     }
     
 }
