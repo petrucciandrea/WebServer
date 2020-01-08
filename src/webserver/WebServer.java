@@ -11,20 +11,24 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.StringTokenizer;
+import javax.xml.bind.JAXBException;
+import webserver.parser.ConfigParser;
+import webserver.pojo.Config;
 
 // The tutorial can be found just here on the SSaurel's Blog : 
 // https://www.ssaurel.com/blog/create-a-simple-http-web-server-in-java
 // Each Client Connection will be managed in a dedicated Thread
 public class WebServer implements Runnable{ 
 	
-	static final File WEB_ROOT = new File("./WebServer/");
+	static File WEB_ROOT;
 	static final String DEFAULT_FILE = "index.html";
 	static final String FILE_NOT_FOUND = "404.html";
 	static final String METHOD_NOT_SUPPORTED = "not_supported.html";
 	// port to listen connection
-	static final int PORT = 8080;
+	static int PORT;
 	
 	// verbose mode
 	static final boolean verbose = true;
@@ -36,8 +40,13 @@ public class WebServer implements Runnable{
 		connect = c;
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws URISyntaxException, JAXBException {
 		try {
+                        ConfigParser configParser = new ConfigParser();
+                        Config config = configParser.parse("webserver/app.xml");
+                        PORT = Integer.parseInt(config.getPort());
+                        WEB_ROOT = new File(config.getPath());
+                        
 			ServerSocket serverConnect = new ServerSocket(PORT);
 			System.out.println("Server started.\nListening for connections on port : " + PORT + " ...\n");
 			
