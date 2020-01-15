@@ -10,8 +10,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import webserver.pojo.Config;
+import webserver.pojo.Details;
 
 /**
  *
@@ -25,5 +27,14 @@ public class ConfigParser {
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();               //effettua il parse del contenuto del file all'interno di una istanza della classe
         Config config = (Config) jaxbUnmarshaller.unmarshal(file);
         return config;
+    }
+    public void format() throws JAXBException{
+        
+        JAXBContext jaxbContext = JAXBContext.newInstance(Details.class);
+        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        
+        File file = new File("WebServer/test.xml");
+        jaxbMarshaller.marshal( new Details(), file );        
     }
 }

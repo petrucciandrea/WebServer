@@ -24,7 +24,8 @@ import webserver.pojo.Config;
 public class WebServer implements Runnable{ 
 	
 	static File WEB_ROOT;
-	static final String DEFAULT_FILE = "index.html";
+	static final String DEFAULT_FILE = "test.xml";
+        //static final String XML_FILE = "test.xml";
 	static final String FILE_NOT_FOUND = "404.html";
 	static final String METHOD_NOT_SUPPORTED = "not_supported.html";
 	// port to listen connection
@@ -48,6 +49,8 @@ public class WebServer implements Runnable{
                         PORT = Integer.parseInt(config.getPort());
                         WEB_ROOT = new File(config.getPath());
                         red = config.isRedirect();
+                        
+                        configParser.format();
                         
 			ServerSocket serverConnect = new ServerSocket(PORT);
 			System.out.println("Server started.\nLiscdtening for connections on port : " + PORT + " ...\n");
@@ -138,7 +141,10 @@ public class WebServer implements Runnable{
                                             out.println("HTTP/1.1 200 OK");
                                             out.println("Server: Java HTTP Server from SSaurel : 1.0");
                                             out.println("Date: " + new Date());
-                                            out.println("Content-type: " + content);
+                                            if(fileRequested.endsWith(".xml"))
+                                                out.println("Content-type: " + "xml");
+                                            else
+                                                out.println("Content-type: " + content);
                                             out.println("Content-length: " + fileLength);
                                             out.println(); // blank line between headers and content, very important !
                                             out.flush(); // flush character output stream buffer
